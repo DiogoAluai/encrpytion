@@ -3,9 +3,7 @@ package daluai.lib.encryption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
@@ -29,7 +27,15 @@ public class AESEncrypter {
      * @param secret 16 byte secret
      */
     public AESEncrypter(String secret) {
-        this.secret = secret;
+        this.secret = validateSecret(secret);
+
+    }
+
+    private static String validateSecret(String secret) {
+        if (secret.length() != 16) {
+            throw new IllegalArgumentException("AES secret length must be 16 bytes long");
+        }
+        return secret;
     }
 
     public String encrypt(String data) throws Exception {
@@ -72,17 +78,14 @@ public class AESEncrypter {
     }
 
     private String decrypt(byte[] bytes) throws GeneralSecurityException {
-        return initDecryptionCipher(bytes).doEncodedFinal();
+        byte[] decryptedBytes = decryptBytes(Base64.getDecoder().decode(bytes));
+        return new String(decryptedBytes);
     }
 
     /**
      * Decrypt bytes without decoding
      */
     public byte[] decryptBytes(byte[] bytes) throws GeneralSecurityException {
-        return initDecryptionCipher(bytes).doFinal();
-    }
-
-    private CipherText initDecryptionCipher(byte[] bytes) throws GeneralSecurityException {
         Key key = new SecretKeySpec(secret.getBytes(), ALGORITHM_AES);
         Cipher decryptCipher = Cipher.getInstance(AES_ECB_PKCS_5_PADDING);
 
@@ -91,16 +94,6 @@ public class AESEncrypter {
         byte[] cipherText = new byte[bytes.length - IV_LENGTH]; // I wonder what happens if encrypted data is less that iv length
         System.arraycopy(bytes, iv.length, cipherText, 0, cipherText.length);
         decryptCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-        return new CipherText(decryptCipher, cipherText);
-    }
-
-    private record CipherText(Cipher cipher, byte[] cypherText) {
-        String doEncodedFinal() throws IllegalBlockSizeException, BadPaddingException {
-            byte[] original = cipher.doFinal(Base64.getDecoder().decode(cypherText));
-            return new String(original);
-        }
-        byte[] doFinal() throws IllegalBlockSizeException, BadPaddingException {
-            return cipher.doFinal(cypherText);
-        }
+        return decryptCipher.doFinal(cipherText);
     }
 }
