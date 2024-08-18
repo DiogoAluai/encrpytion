@@ -24,6 +24,10 @@ public class AESEncrypter {
     public static final int IV_LENGTH = 16;
     private final String secret;
 
+    /**
+     * Constructor
+     * @param secret 16 byte secret
+     */
     public AESEncrypter(String secret) {
         this.secret = secret;
     }
@@ -32,11 +36,17 @@ public class AESEncrypter {
         return encrypt(data.getBytes());
     }
 
+    /**
+     * Encrypt and base64 encode
+     */
     public String encrypt(byte[] data) throws GeneralSecurityException {
         byte[] encrypted = encryptBytes(data);
         return Base64.getEncoder().encodeToString(encrypted);
     }
 
+    /**
+     * Encrypt and return bytes without encoding
+     */
     public byte[] encryptBytes(byte[] data) throws GeneralSecurityException {
         Cipher encryptCipher = Cipher.getInstance(AES_ECB_PKCS_5_PADDING);
         Key key = new SecretKeySpec(secret.getBytes(), ALGORITHM_AES);
@@ -54,6 +64,9 @@ public class AESEncrypter {
         return result;
     }
 
+    /**
+     * Decrypt and base64 decode
+     */
     public String decrypt(String encryptedData) throws Exception {
         return decrypt(encryptedData.getBytes());
     }
@@ -62,6 +75,9 @@ public class AESEncrypter {
         return initDecryptionCipher(bytes).doEncodedFinal();
     }
 
+    /**
+     * Decrypt bytes without decoding
+     */
     public byte[] decryptBytes(byte[] bytes) throws GeneralSecurityException {
         return initDecryptionCipher(bytes).doFinal();
     }

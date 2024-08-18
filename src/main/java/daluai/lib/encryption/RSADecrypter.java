@@ -24,6 +24,9 @@ public class RSADecrypter {
         }
     }
 
+    /**
+     * Decrypt and base64 decode.
+     */
     public String decrypt(String encodedCipherText) {
         try {
             byte[] decryptedBytes = cypher.doFinal(Base64.getDecoder().decode(encodedCipherText));

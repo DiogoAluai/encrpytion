@@ -33,6 +33,9 @@ public class RSAEncrypter {
         return (RSAPublicKey) keyFactory.generatePublic(keySpec);
     }
 
+    /**
+     * Encrypt and base64 encode.
+     */
     public String encrypt(String message) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
