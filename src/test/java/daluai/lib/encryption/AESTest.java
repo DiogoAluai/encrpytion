@@ -33,4 +33,12 @@ public class AESTest {
         assertEquals(text, decipheredText);
     }
 
+    @Test
+    public void stringEncryption() throws Exception {
+        var encrypter = new AESEncrypter("your_encr_secret");
+        var message = "your_api_key";
+        var decryptedMessage = encrypter.decrypt(encrypter.encrypt(message));
+        assertEquals(message, decryptedMessage);
+    }
+
 }

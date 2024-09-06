@@ -23,6 +23,16 @@ public class AESEncrypter {
     private final String secret;
 
     /**
+     * For a quickie encryption
+     */
+    public static void main(String[] args) throws Exception{
+        String someSecret = "your_encr_secret";
+        String messageToEncrypt = "your_api_key";
+        var encrypter = new AESEncrypter(someSecret);
+        System.out.println(encrypter.encrypt(messageToEncrypt));
+    }
+
+    /**
      * Constructor
      * @param secret 16 byte secret
      */
